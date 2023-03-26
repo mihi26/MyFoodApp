@@ -21,6 +21,11 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.example.myfoodapp.CustomAdapter.AdapterHienThiBanAn;
+import com.example.myfoodapp.Fragment.HienThiBanAnFragment;
+import com.example.myfoodapp.Fragment.HienThiNhanVienFragment;
+import com.example.myfoodapp.Fragment.HienThiThucDonFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class TrangChuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -76,6 +81,10 @@ public class TrangChuActivity extends AppCompatActivity implements NavigationVie
 
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction tranHienThiBanAn = fragmentManager.beginTransaction();
+        HienThiBanAnFragment hienThiBanAnFragment = new HienThiBanAnFragment();
+        tranHienThiBanAn.setCustomAnimations(R.anim.hieuung_activity_vao, R.anim.hieuung_activity_ra);
+        tranHienThiBanAn.replace(R.id.content, hienThiBanAnFragment);
+        tranHienThiBanAn.commit();
     }
 
     private void requestStoragePermission() {
@@ -107,8 +116,50 @@ public class TrangChuActivity extends AppCompatActivity implements NavigationVie
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
+        switch (id){
+            case R.id.itTrangChu:
+                FragmentTransaction tranHienThiBanAn = fragmentManager.beginTransaction();
+                HienThiBanAnFragment hienThiBanAnFragment = new HienThiBanAnFragment();
+                tranHienThiBanAn.replace(R.id.content, hienThiBanAnFragment,"TrangChu");
+                tranHienThiBanAn.commit();
+
+                drawerLayout.closeDrawers();
+                break;
+            case R.id.itThucDon:
+                FragmentTransaction tranHienThiThucDon = fragmentManager.beginTransaction();
+                HienThiThucDonFragment hienThiThucDonFragment = new HienThiThucDonFragment();
+                tranHienThiThucDon.setCustomAnimations(R.anim.hieuung_activity_vao, R.anim.hieuung_activity_ra);
+                tranHienThiThucDon.replace(R.id.content, hienThiThucDonFragment,"ThucDon");
+                tranHienThiThucDon.commit();
+
+                drawerLayout.closeDrawers();
+                break;
+            case R.id.itNhanVien:
+                FragmentTransaction tranNhanVien = fragmentManager.beginTransaction();
+                HienThiNhanVienFragment hienThiNhanVienFragment = new HienThiNhanVienFragment();
+                tranNhanVien.setCustomAnimations(R.anim.hieuung_activity_vao, R.anim.hieuung_activity_ra);
+                tranNhanVien.replace(R.id.content, hienThiNhanVienFragment,"NhanVien");
+                tranNhanVien.commit();
+
+                drawerLayout.closeDrawers();
+                break;
+            case R.id.itDangXuat:
+                Intent iDangNhap = new Intent(this, DangNhapActivity.class);
+                startActivity(iDangNhap);
+                finish();
+                break;
         }
         return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == AdapterHienThiBanAn.RESQUEST_CODE_THANHTOAN || requestCode == AdapterHienThiBanAn.RESQUEST_CODE_THEMMONAN){
+            FragmentTransaction tranHienThiBanAn = fragmentManager.beginTransaction();
+            HienThiBanAnFragment hienThiBanAnFragment = new HienThiBanAnFragment();
+            tranHienThiBanAn.replace(R.id.content, hienThiBanAnFragment,"TrangChu");
+            tranHienThiBanAn.commit();
+        }
     }
 }
