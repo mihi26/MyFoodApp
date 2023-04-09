@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp">
+
+    <ImageView
+        android:id="@+id/imHienThiDSMonAn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size150dp"
+        android:scaleType="centerInside"
+        tools:ignore="ContentDescription" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:background="@color/backgroundtransparentBlack">
+
+        <TextView
+            android:background="@drawable/custom_edt"
+            android:id="@+id/txtTenDSMonAn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|left"
+            android:textSize="10dp"
+            android:textStyle="bold"
+            tools:ignore="RtlHardcoded"
+            android:textColor="@color/colorWhite"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:background="@drawable/custom_edt"
+            android:id="@+id/txtGiaTienDSMonAn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|left"
+            android:textStyle="bold"
+            android:textSize="10dp"
+            tools:ignore="RtlHardcoded"
+            android:textColor="@color/colorWhite"
+            android:textAlignment="center"/>
+    </LinearLayout>
+
+</FrameLayout>
