@@ -1,10 +1,19 @@
 package com.example.myfoodapp;
 
+import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,12 +21,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.myfoodapp.DAO.MonAnDAO;
 import com.example.myfoodapp.DTO.MonAnDTO;
 import com.example.myfoodapp.Fragment.HienThiThucDonFragment;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class ThemThucDonActivity extends AppCompatActivity implements View.OnClickListener{
     public static int REQUEST_CODE_THEMLOAITHUCDON = 113;
@@ -36,11 +47,10 @@ public class ThemThucDonActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_themthucdon);
 
-        sDuongdanhinh = "@drawable/backgroundheader1";
+        sDuongdanhinh = "";
         monAnDAO = new MonAnDAO(this);
 
         mamon = getIntent().getIntExtra("mamon", -1);
-//        Toast.makeText(this,mamon+"",Toast.LENGTH_SHORT).show();
 
         tvTitle =findViewById(R.id.tv_title);
         imHinhThucDon = findViewById(R.id.imHinhThucDon);
@@ -55,7 +65,14 @@ public class ThemThucDonActivity extends AppCompatActivity implements View.OnCli
             MonAnDTO monAnDTO = monAnDAO.LayMonAnTheoMa(mamon);
             edTenMonAn.setText(monAnDTO.getTenMonAn());
             edGiaTien.setText(monAnDTO.getGiaTien());
-            imHinhThucDon.setImageURI(Uri.parse(monAnDTO.getHinhAnh()));
+            String hinhanhUrl = monAnDTO.getHinhAnh();
+            if(hinhanhUrl == null || hinhanhUrl.equals(""))
+                imHinhThucDon.setImageResource(R.drawable.backgroundheader1);
+            else {
+                byte[] byteArray = Base64.decode(hinhanhUrl, Base64.DEFAULT);
+                Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                imHinhThucDon.setImageBitmap(image);
+            }
         }
 
         imHinhThucDon.setOnClickListener(this);
@@ -72,7 +89,7 @@ public class ThemThucDonActivity extends AppCompatActivity implements View.OnCli
             case R.id.imHinhThucDon:
                 Intent iMoHinh = new Intent();
                 iMoHinh.setType("image/*");
-                iMoHinh.setAction(Intent.ACTION_PICK);
+                iMoHinh.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(iMoHinh,"Chọn hình thực đơn"), REQUEST_CODE_MOHINH);
                 break;
             case R.id.btnDongYThemMonAn:
@@ -121,8 +138,20 @@ public class ThemThucDonActivity extends AppCompatActivity implements View.OnCli
 
         if(REQUEST_CODE_MOHINH == requestCode){
             if (resultCode == Activity.RESULT_OK && data != null){
-                sDuongdanhinh = data.getData().toString();
-                imHinhThucDon.setImageURI(data.getData());
+                try {
+                    // Chuyển đổi URI thành InputStream
+                    InputStream inputStream = getContentResolver().openInputStream(data.getData());
+                    // Chuyển đổi InputStream thành Bitmap
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
+                    byte[] byteImage = outputStream.toByteArray();
+                    sDuongdanhinh  = Base64.encodeToString(byteImage, Base64.DEFAULT);
+                    imHinhThucDon.setImageURI(data.getData());
+                } catch (IOException e) {
+                    sDuongdanhinh = "";
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

@@ -2,7 +2,9 @@ package com.example.myfoodapp.CustomAdapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +49,6 @@ public class AdapterHienThiDanhSachMonAn extends BaseAdapter{
         TextView txtTenMonAn, txtGiaTien;
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
@@ -65,13 +66,17 @@ public class AdapterHienThiDanhSachMonAn extends BaseAdapter{
             viewHolderHienThiDanhSachMonAn = (ViewHolderHienThiDanhSachMonAn) view.getTag();
 
         MonAnDTO monAnDTO = monAnDTOList.get(position);
-        String hinhanh = monAnDTO.getHinhAnh();
+        String hinhanhUrl = monAnDTO.getHinhAnh();
 
-        if(hinhanh == null || hinhanh.equals(""))
+        if(hinhanhUrl == null || hinhanhUrl.equals(""))
             viewHolderHienThiDanhSachMonAn.imHinhMonAn.setImageResource(R.drawable.backgroundheader1);
         else{
-            Uri uri = Uri.parse(hinhanh);
-            viewHolderHienThiDanhSachMonAn.imHinhMonAn.setImageURI(uri);
+            // Giải mã chuỗi base64 thành mảng byte
+            byte[] byteArray = Base64.decode(hinhanhUrl, Base64.DEFAULT);
+            // Tạo lại Bitmap từ mảng byte
+            Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            // Sử dụng hình ảnh
+            viewHolderHienThiDanhSachMonAn.imHinhMonAn.setImageBitmap(image);
         }
 
         viewHolderHienThiDanhSachMonAn.txtTenMonAn.setText(monAnDTO.getTenMonAn());
